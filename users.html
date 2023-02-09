@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<style>
+     *{
+        margin: 0;
+        padding: 0;
+      }
+      #navbar {
+        display: flex;
+        margin: auto;
+        justify-content: space-evenly;
+        align-items: center;
+        gap: 20%;
+        background-color: rgb(32, 56, 172);
+        padding: 20px;
+        font-size: larger;
+        font-weight: bolder;
+      }
+      #ad {
+        color: white;
+      }
+      #container{
+        /* border: 2px solid brown; */
+        width: 90%;
+        margin: auto;
+        padding: 2%; 
+      }
+      #books_card{
+        /* border: 2px solid rgb(42, 165, 73); */
+        width: 65%;
+        padding: 2%; 
+        margin: auto;
+        display: flex;
+        justify-content: space-evenly;
+        background-color: rgb(181, 179, 179);
+        line-height: 40px;
+        box-shadow: rgba(6, 24, 44, 0.4) 0px 0px 0px 2px, rgba(6, 24, 44, 0.65) 0px 4px 6px -1px, rgba(255, 255, 255, 0.08) 0px 1px 0px inset;
+      }
+      #imageDiv{
+        width: 40%;
+        height: 300px;
+      }
+      #productimg{
+        height: 100%;
+      }
+      #detailsDiv{
+        width: 70%;
+      }
+      #borrow_btn{
+        width: 20%;
+        margin-top: 2%;
+        background-color: rgb(156, 219, 62);
+        color: white;
+        border: none;
+        padding: 2%;
+      }
+      #sort_filter{
+        display: flex;
+        margin: auto;
+        margin-top: 3%;
+        justify-content: center;
+        align-items: center;
+        gap: 30%;
+      }
+
+
+
+</style>
+<body>
+    <div id="navbar">
+        <div>
+            <a href="./index.html" id="ad">Home Page</a>
+        </div>
+    </div>
+    <div id="sort_filter">
+        <select name="" id="pricesort">
+            <option value="">Sort By Price</option>
+            <option value="htl">High to Low</option>
+            <option value="lth">Low to High</option>
+          </select>
+        </div>
+        <select id="filterGenre">
+            <option value="all">Filter by Genre</option>
+            <option value="science">Science</option>
+            <option value="fiction">Fiction</option>
+            <option value="history">History</option>
+            <option value="tech">Tech</option>
+            <option value="business">Business</option>
+        </select>
+    </div>
+    <div id="container">
+        <!-- Appending all books Data here -->
+    </div>
+</body>
+</html>
+<script>
+    var bookdata;
+    let getdata = async () => {
+    let res = await fetch("https://scary-outfit-toad.cyclic.app/admin");
+    let data = await res.json();
+    console.log(data);
+     displayData(data);
+  };
+  getdata();
+
+  function displayData(data){
+    container.innerHTML = null;
+    bookdata = data;
+
+    data.forEach((ele)=>{
+     let container = document.getElementById("container");
+
+     let card = document.createElement("div");
+     card.setAttribute("id", "books_card")
+
+     let img_div = document.createElement("div");
+     img_div.setAttribute("id", "imageDiv");
+
+     let img = document.createElement("img");
+     img.setAttribute("id", "productimg");
+     img.src = ele.image_url
+
+     img_div.append(img);
+
+     let details_div = document.createElement("div");
+     details_div.setAttribute("id", "detailsDiv");
+     
+     let title = document.createElement("h2");
+     title.innerText = ele.book_name;
+     title.setAttribute("id", "book_name");
+
+     
+     let author = document.createElement("p");
+     author.innerText = `Author: ${ele.author}`;
+     author.setAttribute("class", "details");
+
+     let genre = document.createElement("p");
+     genre.innerText = `Genre: ${ele.genre}`;
+     genre.setAttribute("class", "details");
+
+     let edition = document.createElement("p");
+     edition.innerText = `Edition: ${ele.edition}`;
+     edition.setAttribute("class", "details");
+
+     let publisher = document.createElement("p");
+     publisher.innerText = `Publisher: ${ele.publisher}`;
+     publisher.setAttribute("class", "details");
+
+     let cost = document.createElement("p");
+     cost.innerText = `Cost: ${ele.cost}`;
+     cost.setAttribute("class", "details");
+
+     let borrow_button = document.createElement("button");
+     borrow_button.innerText = "Borrow";
+     borrow_button.setAttribute("id", "borrow_btn");
+
+
+     details_div.append(title, author, genre, edition, publisher, cost, borrow_button)
+
+     card.append(img_div, details_div);
+     container.append(card)
+
+    })
+  }
+
+  document.getElementById("pricesort").addEventListener("change", async (e) => {
+    let sortBy = e.target.value;
+
+    if (sortBy === "lth") {
+      let res = await fetch(
+        "https://scary-outfit-toad.cyclic.app/admin?_sort=cost&_order=asc"
+      );
+
+      let data = await res.json();
+      console.log(data);
+      displayData(data);
+    } else if (sortBy === "htl") {
+      let res = await fetch(
+        "https://scary-outfit-toad.cyclic.app/admin?_sort=cost&_order=desc"
+      );
+
+      let data = await res.json();
+      console.log(data);
+      displayData(data);
+    }
+  });
+
+
+  document.querySelector("#filterGenre").addEventListener("change", (e) => {
+                const s = e.target.value;
+                console.log(s);
+                const filterData = bookdata.filter((el) => {
+                    return el.genre == s
+                })
+                displayData(filterData)
+            });
+
+</script>
